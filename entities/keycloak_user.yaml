@@ -1,0 +1,70 @@
+KeycloakUser:
+  name: KeycloakUser
+  description: The digital identity representing a physical person
+  owner: client-infrastructure
+  version: 1.0.0
+  system_of_record: Identity Platform
+  lifecycle_state: Active
+  primary_key: [keycloak_user_id]
+  attributes:
+    - name: keycloak_user_id
+      description: The unique identifier from the keycloak system
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: uuid
+      lifecycle_state: Active
+    - name: email
+      description: The email of the user
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: email
+      lifecycle_state: Active
+    - name: email_verified
+      description: Indicates whether the user email has been verified
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: boolean
+      lifecycle_state: Active
+    - name: enabled
+      description: Indicates whether the user account is active and can be used
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: boolean
+      lifecycle_state: Active
+    - name: realm_id
+      description: The keycloak namespace to which the user belongs 
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      lifecycle_state: Active
+    - name: created_at
+      description: The timestamp when the user was created 
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: timestamp
+      lifecycle_state: Active
+    - name: identity_providers
+      description: The external identity providers associated with the user
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: array
+      lifecycle_state: Active
+      items:
+        type: object
+        required:
+          - identity_provider
+          - federated_user_id
+          - federated_username
+        properties:
+          identity_provider:
+            type: string
+            description: Th external identity provider that the user used to authenticate
+          federated_user_id:
+            type: string
+            description: The unique identifier of the user in the external identity provider system
+          federated_username:
+            type: string
+            description: The username of the user in the external identity provider system
