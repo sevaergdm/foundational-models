@@ -1,0 +1,91 @@
+Workspace:
+  name: Workspace
+  description: The conceptual hub of relationships between users, resources, billing and entitlements in SAAS.
+  owner: client-infrastructure
+  version: 1.0.0
+  system_of_record: Workspace Service
+  lifecycle_state: Active
+  primary_key: [workspace_id]
+  attributes:
+    - name: workspace_id
+      description: The unique identifier of a workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: uuid
+      lifecycle_state: Active
+    - name: workspace_name
+      description: The name of the workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      lifecycle_state: Active
+    - name: workspace_created_at
+      description: The timestamp when the workspace was created
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: timestamp
+      lifecycle_state: Active
+  relationships:
+    - related_entity: WorkspaceMember
+      related_attribute: workspace_members
+      relationship_type: contains
+      description: The members contained in the given workspace
+
+WorkspaceMember:
+  name: WorkspaceMember
+  description: A user who is a member of a given workspace
+  owner: client-infrastructure
+  version: 1.0.0
+  system_of_record: Workspace Service
+  lifecycle_state: Active
+  primary_key: [workspace_id, keycloak_user_id]
+  attributes:
+    - name: workspace_id
+      description: The unique identifier of a workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: uuid
+      lifecycle_state: Active
+    - name: keycloak_user_id
+      description: The unique identifier of a keycloak user
+      owner: identity-platform
+      version: 1.0.0
+      data_type: string
+      data_format: uuid
+      lifecycle_state: Active
+    - name: role
+      description: The role assigned to the user in the workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: 
+        enum:
+          - admin
+          - member
+      lifecycle_state: Active 
+    - name: inserted_at
+      description: The timestamp when the user became a member of the workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: timestamp
+      lifecycle_state: Active
+    - name: removed_at
+      description: The timestamp when the user was removed as a member of the workspace
+      owner: client-infrastructure
+      version: 1.0.0
+      data_type: string
+      data_format: timestamp
+      lifecycle_state: Active
+  relationships:
+    - related_entity: KeycloakUser
+      related_attribute: keycloak_user_id
+      relationship_type: references
+      description: The keycloak user to which the member corresponds
+    - related_entity: Workspace
+      related_attribute: workspace_id
+      relationship_type: references
+      description: The workspace that the member is a member of
