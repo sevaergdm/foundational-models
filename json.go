@@ -35,7 +35,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload any) {
 
 func respondWithPrettyJSON(w http.ResponseWriter, code int, payload any) {
 	w.Header().Set("Content-Type", "application/json")
-	data, err := json.MarshalIndent(payload, "", "\t")
+	data, err := json.MarshalIndent(payload, "", "  ")
 
 	if err != nil {
 		log.Printf("Error marshalling JSON: %s", err)

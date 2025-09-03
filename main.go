@@ -3,25 +3,39 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/santhosh-tekuri/jsonschema/v6"
 )
+
+const canonicalSchemaPath = "schema/foundational_model_schema.json"
 
 type apiConfig struct {
 	entitiesCache       map[string]FoundationalModel
-	canonicalSchemaPath string
 	port                string
+	compiledCanonicalSchema	*jsonschema.Schema
+}
+
+func createCompiledSchema() (*jsonschema.Schema, error) {
+	compiler := jsonschema.NewCompiler()
+	return compiler.Compile(canonicalSchemaPath)
 }
 
 func main() {
 	const filepathRoot = "."
 	mux := http.NewServeMux()
 
-	apiCfg := &apiConfig{
-		canonicalSchemaPath: "schema/foundational_model_schema.json",
-		entitiesCache:       make(map[string]FoundationalModel),
-		port:                "8080",
+	compiledSchema, err := createCompiledSchema()
+	if err != nil {
+		log.Fatalf("Unable to compile canonical schema: %v", err)
 	}
 
-	err := apiCfg.loadEntities("entities")
+	apiCfg := &apiConfig{
+		entitiesCache:       make(map[string]FoundationalModel),
+		port:                "8080",
+		compiledCanonicalSchema: compiledSchema,
+	}
+
+	err = apiCfg.loadEntities("entities")
 	if err != nil {
 		log.Fatalf("Failed to load entities: %v", err)
 	}
