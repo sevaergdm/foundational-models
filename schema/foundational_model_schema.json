@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:foundational-models:id:foundational-model",
+  "title": "Foundational Model",
+  "description": "The canonical schema for all foundational models",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the entity",
+      "type": "string"
+    },
+    "description": {
+      "description": "A human readable description of the entity",
+      "type": "string"
+    },
+    "owner": {
+      "description": "The team who owns the entity",
+      "type": "string"
+    },
+    "version": {
+      "description": "The current version of the entity following SemVer 2.0",
+      "type": "string"
+    },
+    "system_of_record": {
+      "description": "The system which is responsible for the entity and considered the source of truth",
+      "type": "string"
+    },
+    "lifecycle_state": {
+      "description": "The current lifecycle state of the entity",
+      "type": "string",
+      "enum": [
+        "active",
+        "deprecated"
+      ]
+    },
+    "primary_key": {
+      "description": "The primary key of the entity, generally something like <entity_name>_id",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "attributes": {
+      "description": "The attributes describing the entity",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attribute"
+      }
+    },
+    "relationships": {
+      "description": "The relationships to other entities",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "entity_type": {
+      "description": "The type of entity, disginguishing from foundational and associative entities",
+      "type": "string",
+      "enum": [
+        "foundational",
+        "associative"
+      ]
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "owner",
+    "version",
+    "system_of_record",
+    "lifecycle_state",
+    "primary_key",
+    "attributes",
+    "entity_type"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "attribute": {
+      "description": "A self-describing attribute of an entity",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the attribute",
+          "type": "string"
+        },
+        "description": {
+          "description": "A human readable description of the attribute",
+          "type": "string"
+        },
+        "data_type": {
+          "description": "The data type of the attribute adhering to JSON data types",
+          "type": "string",
+          "enum": [
+            "object",
+            "string",
+            "integer",
+            "number",
+            "array",
+            "boolean",
+            "null"
+          ]
+        },
+        "data_format": {
+          "description": "The format of the attribute if applicable, adhering to subset of available json formats",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "uuid",
+                "email",
+                "uri",
+                "date-time",
+                "date"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "enum": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "enum"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "items": {
+          "description": "The schema for items of an array type",
+          "$ref": "#/$defs/attribute-items"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "data_type"
+      ],
+      "additionalProperties": false
+    },
+    "attribute-items": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["object"]
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "$ref": "#/$defs/attribute"
+            }
+          }
+        }
+      },
+      "required": [
+        "type",
+        "required",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "relationship": {
+      "description": "The relationship between two entities",
+      "type": "object",
+      "properties": {
+        "related_entity": {
+          "description": "The target entity for the relationship",
+          "type": "string"
+        },
+        "relationship_type": {
+          "description": "The kind of relationship between the entities",
+          "type": "string",
+          "enum": [
+            "contains",
+            "is_a",
+            "references"
+          ]
+        },
+        "related_attribute": {
+          "description": "The attribute in the current entity that serves as the foreign key to the related entity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "related_entity",
+        "relationship_type",
+        "related_attribute"
+      ]
+    },
+    "additionalProperties": false
+  }
+}

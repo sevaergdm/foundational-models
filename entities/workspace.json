@@ -1,0 +1,38 @@
+{
+  "name": "workspace",
+  "description": "The conceptual hub of relationships between users, resources, billing and entitlements in SAAS.",
+  "owner": "client-infrastructure",
+  "version": "1.0.0",
+  "system_of_record": "workspace-service",
+  "lifecycle_state": "active",
+  "primary_key": [
+    "workspace_id"
+  ],
+  "attributes": [
+    {
+      "name": "workspace_id",
+      "description": "The unique identifier of a workspace",
+      "data_type": "string",
+      "data_format": "uuid"
+    },
+    {
+      "name": "workspace_name",
+      "description": "The name of the workspace",
+      "data_type": "string"
+    },
+    {
+      "name": "created_at",
+      "description": "The timestamp when the workspace was created",
+      "data_type": "string",
+      "data_format": "date-time"
+    }
+  ],
+  "relationships": [
+    {
+      "related_entity": "workspace_member",
+      "related_attribute": "workspace_id",
+      "relationship_type": "contains"
+    }
+  ],
+  "entity_type": "foundational"
+}

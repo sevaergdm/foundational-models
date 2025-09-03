@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"maps"
 	"os"
 	"path/filepath"
 )
@@ -15,7 +14,7 @@ func (cfg *apiConfig) loadEntities(path string) error {
 			return err
 		}
 		
-		if !f.IsDir() && (filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml") {
+		if !f.IsDir() && filepath.Ext(path) == ".json" {
 			files = append(files, path)
 		}
 		return nil
@@ -26,11 +25,11 @@ func (cfg *apiConfig) loadEntities(path string) error {
 
 	for _, file := range files {
 		log.Printf("Processing file: %s", file)
-		entityMap, err := ParseYaml(file)
+		entity, err := ParseJSON(file)
 		if err != nil {
 			return err
 		}
-		maps.Copy(cfg.entitiesCache, entityMap)
+		cfg.entitiesCache[entity.Name] = entity
 	}
 	return nil
 }

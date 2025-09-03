@@ -5,7 +5,7 @@ import (
 )
 
 func (cfg *apiConfig) handlerGetEntities(w http.ResponseWriter, r *http.Request) {
-	entities := []CoreEntity{}
+	entities := []FoundationalModel{}
 	for _, value := range cfg.entitiesCache {
 		entities = append(entities, value)
 	}

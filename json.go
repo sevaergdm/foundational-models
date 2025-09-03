@@ -21,7 +21,7 @@ func respondWithError(w http.ResponseWriter, code int, msg string, err error) {
 	})
 }
 
-func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func respondWithJSON(w http.ResponseWriter, code int, payload any) {
 	w.Header().Set("Content-Type", "application/json")
 	data, err := json.Marshal(payload)
 	if err != nil {
@@ -33,7 +33,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(data)
 }
 
-func respondWithPrettyJSON(w http.ResponseWriter, code int, payload interface{}) {
+func respondWithPrettyJSON(w http.ResponseWriter, code int, payload any) {
 	w.Header().Set("Content-Type", "application/json")
 	data, err := json.MarshalIndent(payload, "", "\t")
 

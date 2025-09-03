@@ -1,0 +1,78 @@
+{
+  "name": "keycloak_user",
+  "description": "The digital identity representing a physical person",
+  "owner": "client-infrastructure",
+  "version": "1.0.0",
+  "system_of_record": "identity-platform",
+  "lifecycle_state": "active",
+  "primary_key": [
+    "keycloak_user_id"
+  ],
+  "attributes": [
+    {
+      "name": "keycloak_user_id",
+      "description": "The unique identifier from the keycloak system",
+      "data_type": "string",
+      "data_format": "uuid"
+    },
+    {
+      "name": "email",
+      "description": "The email of the user",
+      "data_type": "string",
+      "data_format": "email"
+    },
+    {
+      "name": "email_verified",
+      "description": "Indicates whether the user email has been verified",
+      "data_type": "boolean"
+    },
+    {
+      "name": "enabled",
+      "description": "Indicates whether the user account is active and can be used",
+      "data_type": "boolean"
+    },
+    {
+      "name": "realm_id",
+      "description": "The keycloak namespace to which the user belongs",
+      "data_type": "string"
+    },
+    {
+      "name": "created_at",
+      "description": "The timestamp when the user was created",
+      "data_type": "string",
+      "data_format": "date-time"
+    },
+    {
+      "name": "identity_providers",
+      "description": "The external identity providers associated with the user",
+      "data_type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "identity_provider",
+          "federated_user_id",
+          "federated_username"
+        ],
+        "properties": {
+          "identity_provider": {
+            "name": "identity_provider",
+            "data_type": "string",
+            "description": "The external identity provider that the user used to authenticate"
+          },
+          "federated_user_id": {
+            "name": "federated_user_id",
+            "data_type": "string",
+            "description": "The unique identifier of the user in the external identity provider system"
+          },
+          "federated_username": {
+            "name": "federated_username",
+            "data_type": "string",
+            "description": "The username of the user in the external identity provider system"
+          }
+        }
+      }
+    }
+  ],
+  "entity_type": "foundational"
+}
+

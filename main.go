@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
 type apiConfig struct {
-	entitiesCache map[string]CoreEntity
+	entitiesCache       map[string]FoundationalModel
+	canonicalSchemaPath string
+	port                string
 }
 
 func main() {
-	const port = "8080"
 	const filepathRoot = "."
-
 	mux := http.NewServeMux()
 
 	apiCfg := &apiConfig{
-		entitiesCache: make(map[string]CoreEntity),
+		canonicalSchemaPath: "schema/foundational_model_schema.json",
+		entitiesCache:       make(map[string]FoundationalModel),
+		port:                "8080",
 	}
 
 	err := apiCfg.loadEntities("entities")
@@ -25,22 +26,15 @@ func main() {
 		log.Fatalf("Failed to load entities: %v", err)
 	}
 
-	opts := DefaultConverterOptions()
-	workspace := apiCfg.entitiesCache["Workspace"]
-	schemaBytes, err := apiCfg.EntityToJSONSchemaBytes(workspace, opts)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(schemaBytes))
-
 	mux.HandleFunc("GET /api/entities", apiCfg.handlerGetEntities)
 	mux.HandleFunc("GET /api/entities/{entityName}", apiCfg.handlerGetEntity)
+	mux.HandleFunc("POST /api/validate", apiCfg.handlerValidateEntitySchema)
 
 	server := &http.Server{
 		Handler: mux,
-		Addr:    ":" + port,
+		Addr:    ":" + apiCfg.port,
 	}
 
-	log.Printf("Serving files from %s on port: %s\n", filepathRoot, port)
+	log.Printf("Serving files from %s on port: %s\n", filepathRoot, apiCfg.port)
 	log.Fatal(server.ListenAndServe())
 }
