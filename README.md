@@ -55,3 +55,7 @@ Update an existing schema. Checks are done to see if there are no changes, and i
 ```
 curl -X PUT -H "Content-Type: application/json" -d <JSONSCHEMA> http://localhost:8080/api/entities/{entityName}
 ```
+
+## Contributing
+
+If you'd like to contribute in any way feel free to clone the repo and submit a PR to the 'main' branch.
