@@ -1,90 +1,57 @@
 package main
 
 import (
-	"fmt"
-	"reflect"
-	"strings"
+	"encoding/json"
+	"regexp"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/yudai/gojsondiff"
+	"github.com/yudai/gojsondiff/formatter"
 )
 
-type DiffReporter struct {
-	path cmp.Path
-	modelName string
-	diffs []string
-}
+const SchemasMatch = "Schemas are the same"
+const VersionNotUptdated = "Version not updated"
 
-func (r *DiffReporter) PushStep(ps cmp.PathStep) {
-	r.path = append(r.path, ps)
-}
-
-func (r *DiffReporter) Report(rs cmp.Result) {
-	if !rs.Equal() {
-		vx, vy := r.path.Last().Values()
-
-		if !vx.IsValid() && vy.IsValid() && vy.Kind() == reflect.Struct {
-			r.reportAddedStruct(vy.Interface())
-			return
-		}
-
-		oldVal := r.formatValue(vx)
-		newVal := r.formatValue(vy)
-
-		customPath := r.formatPath()
-
-		r.diffs = append(r.diffs, fmt.Sprintf("%#v:\n\t-: %+v\n\t+: %v\n", customPath, oldVal, newVal))
-	}
-}
-
-func (r *DiffReporter) reportAddedStruct(addedStruct any) {
-	addedType := reflect.TypeOf(addedStruct)
-	zeroValue := reflect.New(addedType).Elem().Interface()
-
-	tempReporter := &DiffReporter{
-		path: r.path,
-		modelName: r.modelName,
-		diffs: []string{},
+func entityDiff(cachedEntity, requestEntity []byte) (string, error) {
+	var mappedCachedJSON map[string]any
+	err := json.Unmarshal(cachedEntity, &mappedCachedJSON)
+	if err != nil {
+		return "", err
 	}
 
-	cmp.Equal(zeroValue, addedStruct, cmp.Reporter(tempReporter))
-
-	for _, diff := range tempReporter.diffs {
-		r.diffs = append(r.diffs, "+ "+diff)
+	var mappedBody map[string]any
+	err = json.Unmarshal(requestEntity, &mappedBody)
+	if err != nil {
+		return "", err
 	}
-}
-
-func (r *DiffReporter) formatPath() string {
-	parts := []string{r.modelName}
-	for _, step := range r.path[1:] {
-		parts = append(parts, fmt.Sprintf("%v", step))
-	}
-	return strings.Join(parts, "")
-}
-
-func (r *DiffReporter) formatValue(v reflect.Value) string {
-	if !v.IsValid() {
-		return "(new)"
+	
+	differ := gojsondiff.New()
+	diff := differ.CompareObjects(mappedCachedJSON, mappedBody)
+	
+	if !diff.Modified() {
+		return SchemasMatch, nil
 	}
 
-	valStr := fmt.Sprintf("%#v", v.Interface())
-	return strings.TrimPrefix(valStr, "main.")
-}
-
-func (r *DiffReporter) PopStep() {
-	r.path = r.path[:len(r.path)-1]
-}
-
-func (r *DiffReporter) String() string {
-	return strings.Join(r.diffs, "\n")
-}
-
-
-func EntityDiff(entity, updatedEntity FoundationalModel) string {
-	var r = DiffReporter{
-		modelName: entity.Name,
-		diffs: []string{},
+	config := formatter.AsciiFormatterConfig{
+		ShowArrayIndex: false,
+		Coloring: true,
 	}
-	cmp.Equal(entity, updatedEntity, cmp.Reporter(&r))
+	
+	f := formatter.NewAsciiFormatter(mappedCachedJSON, config)
+	diffReport, err := f.Format(diff)
+	if err != nil {
+		return "", err
+	}
 
-	return r.String()
+
+	pattern := `[+-][\s\x{A0}]+"version":`
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return "", err
+	}
+
+	if !re.MatchString(diffReport) {
+		return VersionNotUptdated, nil
+	}
+	
+	return diffReport, nil
 }

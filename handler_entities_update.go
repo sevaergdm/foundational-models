@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,8 +10,6 @@ import (
 	"strings"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
-	"github.com/yudai/gojsondiff"
-	"github.com/yudai/gojsondiff/formatter"
 )
 
 func (cfg *apiConfig) handlerUpdateEntity(w http.ResponseWriter, r *http.Request) {
@@ -45,60 +42,27 @@ func (cfg *apiConfig) handlerUpdateEntity(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var mappedBody map[string]any
-	var mappedCachedJSON map[string]any
-	err = json.Unmarshal(body, &mappedBody)
+	diffReport, err := entityDiff(cachedJSON, body)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Unable to unmarshal body", err)
+			respondWithError(w, http.StatusInternalServerError, "Unable to create diff report", err)
+			return
+	}
+	if diffReport == SchemasMatch {
+		respondWithError(w, http.StatusBadRequest, "Couldn't update because schemas are the same", nil)
+		return
+	}
+	if diffReport == VersionNotUptdated {
+		respondWithError(w, http.StatusBadRequest, "Couldn't update schema because the version was not upated", nil)
 		return
 	}
 
-	err = json.Unmarshal(cachedJSON, &mappedCachedJSON)
+	err = os.WriteFile(fmt.Sprintf("entities/%s.json", strings.ToLower(entityName)), body, 0644)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Unable to unmarshal cachedJSON", err)
-		return
-	}
-	
-	differ := gojsondiff.New()
-	diff, err := differ.Compare(cachedJSON, body)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to compare json files", err)
-		return
-	}
-	
-	if !diff.Modified() {
-		respondWithError(w, http.StatusBadRequest, "No changes detected", nil)
-		return
-	}
-	
-	f := formatter.NewAsciiFormatter(mappedCachedJSON, formatter.AsciiFormatterDefaultConfig)
-	diffReport, err := f.Format(diff)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Unable to format output report", err)
+		respondWithError(w, http.StatusInternalServerError, "Unable to update entity file", err)
 		return
 	}
 
+	respondWithJSON(w, http.StatusOK, fmt.Sprintf("%s was successfully updated", entityName))
 	fmt.Println(diffReport)
-
-
-
-//	pattern := `[+-][\s\x{A0}]+Version:`
-//	re, err := regexp.Compile(pattern)
-//	if err != nil {
-//		respondWithError(w, http.StatusInternalServerError, "Unable to compile regexp", err)
-//		return
-//	}
-//
-//	if !re.MatchString(diff) {
-//		respondWithError(w, http.StatusBadRequest, "Version was not changed with update", nil)
-//		return
-//	}
-//
-//	err = os.WriteFile(fmt.Sprintf("entities/%s.json", strings.ToLower(entity.Name)), body, 0644)
-//	if err != nil {
-//		respondWithError(w, http.StatusInternalServerError, "Unable to update entity file", err)
-//	}
-//
-//	respondWithJSON(w, http.StatusOK, fmt.Sprintf("%s was successfully updated", entity.Name))
-//	fmt.Println(diff)
 }
+
