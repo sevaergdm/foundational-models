@@ -1,4 +1,5 @@
 # Foundational Models
+
 One of the common issues that I run into is a lack of a common vocabulary to describe an organization that is understandable at a technical and business level. I have always found the concept of domain entities to be something fairly easy to grasp, and generally agreed upon as something "we should have".
 
 As data is often an afterthought when it comes to product development, I also think of this as way to start on a better foot with an entity first approach. 
