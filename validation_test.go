@@ -32,8 +32,13 @@ func TestFormatValidationError(t *testing.T) {
 func addInMemorySchema(t *testing.T, schemaStr string) *apiConfig {
 	t.Helper()
 
+	schema, err := jsonschema.UnmarshalJSON(strings.NewReader(schemaStr))
+	if err != nil {
+		t.Fatalf("Unable to unmarshal schema string: %v", err)
+	}
+
 	compiler := jsonschema.NewCompiler()
-	if err := compiler.AddResource("test-schema.json", strings.NewReader(schemaStr)); err != nil {
+	if err := compiler.AddResource("test-schema.json", schema); err != nil {
 		t.Fatalf("Unable to add in-memory schema resource: %v", err)
 	}
 
@@ -50,7 +55,6 @@ func addInMemorySchema(t *testing.T, schemaStr string) *apiConfig {
 
 func TestValidateFoundationalEntityValid(t *testing.T) {
 	schema := `{
-	"$id": "test-schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "required": ["name", "owner"],
@@ -67,4 +71,41 @@ func TestValidateFoundationalEntityValid(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error for valid json, but got: %v", err)
 	}
+}
+
+func TestValidateFoundationalEntityInvalid(t *testing.T) {
+	const uri = "mem://schema-invalid.json"
+	schema := `{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["name", "owner", "description"],
+  "properties": {
+    "name": { "type": "string" },
+    "owner": { "type": "string" },
+		"description": { "type": "string" }
+  }
+}`
+
+	cfg := addInMemorySchema(t, schema)
+
+	invalidJSON := `{"name":"TestEntity","owner":"client"}`
+	err := cfg.validateFoundationalEntity(strings.NewReader(invalidJSON))
+	if err == nil {
+		t.Fatal("expected error for invalid json, but got none")
+	}
+	
+	verr, ok := err.(*jsonschema.ValidationError)
+	if !ok {
+		t.Fatalf("expected ValidationError, but got %T", err)
+	}
+
+	errors := FormatValidationError(verr)
+	if len(errors) != 1 {
+		t.Fatal("expected exactly one formatted error")
+	}
+
+	if !strings.Contains(errors[0].Message, "description") {
+	t.Fatalf("expected error message to contain 'description': %+v", errors)
+	}
+
 }

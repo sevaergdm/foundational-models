@@ -1,0 +1,39 @@
+{
+  "name": "Product",
+  "description": "A physical or digital good or service offered for sale",
+  "owner": "product-team",
+  "version": "1.0.0",
+  "system_of_record": "product-catalog-service",
+  "lifecycle_state": "active",
+  "primary_key": ["product_id"],
+  "attributes": [
+    {
+      "name": "product_id",
+      "description": "The unique identifier for the product",
+      "data_type": "string",
+      "data_format": "uuid"
+    },
+    {
+      "name": "name",
+      "description": "The name of the product",
+      "data_type": "string"
+    },
+    {
+      "name": "price",
+      "description": "The price of the product",
+      "data_type": "number"
+    },
+    {
+      "name": "sku",
+      "description": "The stock keeping unit identifier",
+      "data_type": "string"
+    },
+    {
+      "name": "available_on",
+      "description": "The date the product was first available",
+      "data_type": "string",
+      "data_format": "date"
+    }
+  ],
+  "entity_type": "foundational"
+}

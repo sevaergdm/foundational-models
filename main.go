@@ -43,6 +43,8 @@ func main() {
 	mux.HandleFunc("GET /api/entities", apiCfg.handlerGetEntities)
 	mux.HandleFunc("GET /api/entities/{entityName}", apiCfg.handlerGetEntity)
 	mux.HandleFunc("POST /api/validate", apiCfg.handlerValidateEntitySchema)
+	mux.HandleFunc("POST /api/entities", apiCfg.handlerCreateEntity)
+	mux.HandleFunc("PUT /api/entities/{entityName}", apiCfg.handlerUpdateEntity)
 
 	server := &http.Server{
 		Handler: mux,
