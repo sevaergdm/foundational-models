@@ -70,6 +70,8 @@ go run ./DBML
 
 This is a very basic, static visualization, but provides a decent overview. Alternatively, the dbml file content can be pased into [dbdiagram.io](https://dbdiagram.io/) for a more interactive (and nicer looking) visualization.
 
+![image](./DBML/foundational_models.svg)
+
 ## Contributing
 
 If you'd like to contribute in any way feel free to clone the repo and submit a PR to the 'main' branch.
