@@ -1,7 +1,8 @@
-package main
+package model_types
 
 type RelationshipType int
 type EntityType int
+type RelationshipCardinality int
 
 const (
 	Contains RelationshipType = iota
@@ -12,6 +13,13 @@ const (
 const (
 	Foundational EntityType = iota
 	Associative
+)
+
+const (
+	OneToMany RelationshipCardinality = iota
+	ManyToOne
+	OneToOne
+	ManyToMany
 )
 
 var relationshipName = map[RelationshipType]string{
@@ -25,6 +33,13 @@ var entityTypeName = map[EntityType]string{
 	Associative:  "associative",
 }
 
+var relationshipCardinalityName = map[RelationshipCardinality]string{
+	OneToMany:  "OneToMany",
+	ManyToOne:  "ManyToOne",
+	OneToOne:   "OneToOne",
+	ManyToMany: "ManyToMany",
+}
+
 func (r RelationshipType) String() string {
 	return relationshipName[r]
 }
@@ -33,10 +48,15 @@ func (e EntityType) String() string {
 	return entityTypeName[e]
 }
 
+func (r RelationshipCardinality) String() string {
+	return relationshipCardinalityName[r]
+}
+
 type Relationship struct {
-	RelatedEntity    string `json:"related_entity"`
-	RelationshipType string `json:"relationship_type"`
-	RelatedAttribute string `json:"related_attribute"`
+	RelatedEntity           string `json:"related_entity"`
+	RelationshipType        string `json:"relationship_type"`
+	RelatedAttribute        string `json:"related_attribute"`
+	RelationshipCardinality string `json:"relationship_cardinality"`
 }
 
 type Attribute struct {

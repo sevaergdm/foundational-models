@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
+	"github.com/sevaergdm/foundational-models/model_types"
 )
 
 func (cfg *apiConfig) handlerCreateEntity(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,7 @@ func (cfg *apiConfig) handlerCreateEntity(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var entity FoundationalModel
+	var entity model_types.FoundationalModel
 	err = json.Unmarshal(body, &entity)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid format", err)

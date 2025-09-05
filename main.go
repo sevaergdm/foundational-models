@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/santhosh-tekuri/jsonschema/v6"
+	"github.com/sevaergdm/foundational-models/model_types"
 )
 
 const canonicalSchemaPath = "schema/foundational_model_schema.json"
 
 type apiConfig struct {
-	entitiesCache       map[string]FoundationalModel
+	entitiesCache       map[string]model_types.FoundationalModel
 	port                string
 	compiledCanonicalSchema	*jsonschema.Schema
 }
@@ -21,22 +22,6 @@ func createCompiledSchema() (*jsonschema.Schema, error) {
 }
 
 func main() {
-	apiCfg := &apiConfig{
-		entitiesCache: make(map[string]FoundationalModel),
-	}
-
-	err := apiCfg.loadEntities("entities")
-	if err != nil {
-		log.Fatalf("Failed to load entities: %v", err)
-	}
-
-	err = apiCfg.graphBuilder()
-	if err != nil {
-		log.Fatalf("Failed to build graph: %v", err)
-	}
-}
-
-func oldMain() {
 	const filepathRoot = "."
 	mux := http.NewServeMux()
 
@@ -46,7 +31,7 @@ func oldMain() {
 	}
 
 	apiCfg := &apiConfig{
-		entitiesCache:       make(map[string]FoundationalModel),
+		entitiesCache:       make(map[string]model_types.FoundationalModel),
 		port:                "8080",
 		compiledCanonicalSchema: compiledSchema,
 	}

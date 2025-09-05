@@ -27,12 +27,5 @@
       "data_format": "date-time"
     }
   ],
-  "relationships": [
-    {
-      "related_entity": "workspace_member",
-      "related_attribute": "workspace_id",
-      "relationship_type": "contains"
-    }
-  ],
   "entity_type": "foundational"
 }

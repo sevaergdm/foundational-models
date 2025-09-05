@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/sevaergdm/foundational-models/model_types"
 	"net/http"
 )
 
 func (cfg *apiConfig) handlerGetEntities(w http.ResponseWriter, r *http.Request) {
-	entities := []FoundationalModel{}
+	entities := []model_types.FoundationalModel{}
 	for _, value := range cfg.entitiesCache {
 		entities = append(entities, value)
 	}
@@ -14,7 +15,7 @@ func (cfg *apiConfig) handlerGetEntities(w http.ResponseWriter, r *http.Request)
 
 func (cfg *apiConfig) handlerGetEntity(w http.ResponseWriter, r *http.Request) {
 	entityName := r.PathValue("entityName")
-	
+
 	requestedEntity, ok := cfg.entitiesCache[entityName]
 	if !ok {
 		respondWithError(w, http.StatusNotFound, "Unable to find requested entity", nil)

@@ -1,0 +1,29 @@
+Table workspace {
+  workspace_id string [note: 'The unique identifier of a workspace']
+  workspace_name string [note: 'The name of the workspace']
+  created_at string [note: 'The timestamp when the workspace was created']
+}
+
+Table workspace_member {
+  workspace_id string [note: 'The unique identifier of a workspace']
+  keycloak_user_id string [note: 'The unique identifier of a keycloak user']
+  role string [note: 'The role assigned to the user in the workspace']
+  inserted_at string [note: 'The timestamp when the user became a member of the workspace']
+  removed_at string [note: 'The timestamp when the user was removed as a member of the workspace']
+}
+
+Table keycloak_user {
+  keycloak_user_id string [note: 'The unique identifier from the keycloak system']
+  email string [note: 'The email of the user']
+  email_verified boolean [note: 'Indicates whether the user email has been verified']
+  enabled boolean [note: 'Indicates whether the user account is active and can be used']
+  realm_id string [note: 'The keycloak namespace to which the user belongs']
+  created_at string [note: 'The timestamp when the user was created']
+  identity_providers array [note: 'The external identity providers associated with the user']
+}
+
+
+
+Ref references: workspace_member.keycloak_user_id > keycloak_user.keycloak_user_id
+Ref references: workspace_member.workspace_id > workspace.workspace_id
+

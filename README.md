@@ -8,13 +8,18 @@ To help facilitate this, I wanted to create a repository to store these "foundat
 
 At this iteration, the setup is very naive; storing entities as json files within the repo itself and just performing file operations via local endpoints.
 
-In the future, I would like to generate a visualization which could either be something static like an ERD or possibly utilize a graph db so that the models would become queryable.
-
 ## Setup
 
 Everything is self contained in the repo, so it can be cloned and run directly, and then responds to basic api requests.
 
-## Running the service
+The one exception is to install the dbml-renderer package for the visualization generation to work. This can be done by running: 
+
+```
+npm install -g @softwaretechnik/dbml-render
+```
+Read more about the tool [here](https://github.com/softwaretechnik-berlin/dbml-renderer) 
+
+## Running the Service
 
 The server is started by a basic `go run .` in the root directory
 
@@ -55,6 +60,15 @@ Update an existing schema. Checks are done to see if there are no changes, and i
 ```
 curl -X PUT -H "Content-Type: application/json" -d <JSONSCHEMA> http://localhost:8080/api/entities/{entityName}
 ```
+## Generating visualizations
+
+In the DBML directory is a separate main function (for now there is a lot of redundancy, but I will fix this later). Running this function (like below, assuming you are in the project root) will generate a DBML file and an svg from the DBML file (assuming you have the dbml-renderer package installed).
+
+```
+go run ./DBML
+```
+
+This is a very basic, static visualization, but provides a decent overview. Alternatively, the dbml file content can be pased into [dbdiagram.io](https://dbdiagram.io/) for a more interactive (and nicer looking) visualization.
 
 ## Contributing
 

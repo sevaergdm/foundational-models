@@ -50,12 +50,14 @@
     {
       "related_entity": "keycloak_user",
       "related_attribute": "keycloak_user_id",
-      "relationship_type": "references"
+      "relationship_type": "references",
+      "relationship_cardinality": "many_to_one"
     },
     {
       "related_entity": "workspace",
       "related_attribute": "workspace_id",
-      "relationship_type": "references"
+      "relationship_type": "references",
+      "relationship_cardinality": "many_to_one"
     }
   ],
   "entity_type": "associative"
