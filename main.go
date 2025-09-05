@@ -21,6 +21,22 @@ func createCompiledSchema() (*jsonschema.Schema, error) {
 }
 
 func main() {
+	apiCfg := &apiConfig{
+		entitiesCache: make(map[string]FoundationalModel),
+	}
+
+	err := apiCfg.loadEntities("entities")
+	if err != nil {
+		log.Fatalf("Failed to load entities: %v", err)
+	}
+
+	err = apiCfg.graphBuilder()
+	if err != nil {
+		log.Fatalf("Failed to build graph: %v", err)
+	}
+}
+
+func oldMain() {
 	const filepathRoot = "."
 	mux := http.NewServeMux()
 

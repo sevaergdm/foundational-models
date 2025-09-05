@@ -48,12 +48,12 @@
   ],
   "relationships": [
     {
-      "related_entity": "KeycloakUser",
+      "related_entity": "keycloak_user",
       "related_attribute": "keycloak_user_id",
       "relationship_type": "references"
     },
     {
-      "related_entity": "Workspace",
+      "related_entity": "workspace",
       "related_attribute": "workspace_id",
       "relationship_type": "references"
     }
